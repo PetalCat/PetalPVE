@@ -4,6 +4,7 @@ from __future__ import annotations
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -105,3 +106,26 @@ class ProxmoxButton(CoordinatorEntity[ProxmoxCoordinator], ButtonEntity):
         )
         # Request update
         await self.coordinator.async_request_refresh()
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information about this entity."""
+        if self._resource_type in ("qemu", "lxc"):
+             # Get VM data
+            data = None
+            if self._resource_type == "qemu":
+                data = self.coordinator.data["vms"].get(self._vm_id)
+            else:
+                data = self.coordinator.data["lxcs"].get(self._vm_id)
+            
+            node = data.get("node") if data else None
+            device_name = data.get("name", "Unknown") if data else "Unknown"
+
+            return DeviceInfo(
+                identifiers={(DOMAIN, str(self._vm_id))},
+                name=device_name,
+                manufacturer="Proxmox",
+                model="Virtual Machine" if self._resource_type == "qemu" else "LXC Container",
+                via_device=(DOMAIN, node) if node else None,
+            )
+        return None

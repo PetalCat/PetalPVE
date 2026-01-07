@@ -10,6 +10,7 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -132,3 +133,33 @@ class ProxmoxBinarySensor(CoordinatorEntity[ProxmoxCoordinator], BinarySensorEnt
                 if k not in ["status", "name"]:
                     attrs[k] = v
         return attrs
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information about this entity."""
+        if self._resource_type == "node":
+            return DeviceInfo(
+                identifiers={(DOMAIN, self._resource_id)},
+                name=self._resource_id,
+                manufacturer="Proxmox",
+                model="Proxmox VE Node",
+                configuration_url=f"https://{self.coordinator.client._host}:{self.coordinator.client._port}",
+            )
+        elif self._resource_type in ("qemu", "lxc"):
+            # Get VM data to find the node it's on for "via_device"
+            data = None
+            if self._resource_type == "qemu":
+                data = self.coordinator.data["vms"].get(int(self._resource_id))
+            else:
+                data = self.coordinator.data["lxcs"].get(int(self._resource_id))
+            
+            node = data.get("node") if data else None
+            
+            return DeviceInfo(
+                identifiers={(DOMAIN, self._resource_id)},
+                name=self._attr_name.replace(f" {self._key.capitalize()}", "").replace(f" {self._key}", ""), # Try to get back to just the VM Name
+                manufacturer="Proxmox",
+                model="Virtual Machine" if self._resource_type == "qemu" else "LXC Container",
+                via_device=(DOMAIN, node) if node else None,
+            )
+        return None
