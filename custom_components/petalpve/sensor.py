@@ -75,6 +75,18 @@ async def async_setup_entry(
             lambda x: round(x.get("mem", 0) / 1073741824, 2) if x else 0
         ))
         
+        # Disk Used
+        entities.append(ProxmoxSensor(
+            coordinator, name, "qemu", str(vm_id), "disk_used", "Disk Used", 
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
+            lambda x: round(x.get("disk", 0) / 1073741824, 2) if x else 0
+        ))
+        # Disk Total
+        entities.append(ProxmoxSensor(
+            coordinator, name, "qemu", str(vm_id), "disk_total", "Disk Total", 
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
+            lambda x: round(x.get("maxdisk", 0) / 1073741824, 2) if x else 0
+        ))
     # LXC Sensors
     for vm_id, vm_data in coordinator.data["lxcs"].items():
         name = vm_data["name"]
