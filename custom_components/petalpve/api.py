@@ -73,6 +73,17 @@ class ProxmoxClient:
         try:
             return self._proxmox.nodes.get()
         except Exception as err:
+            # Check for 401 Unauthorized (Ticket Expired)
+            if "401" in str(err) or "Unauthorized" in str(err):
+                LOGGER.warning("Auth token expired, reconnecting...")
+                if self.connect():
+                    try:
+                         return self._proxmox.nodes.get()
+                    except Exception as retry_err:
+                        LOGGER.error("Failed to get nodes after reconnect: %s", retry_err)
+                else:
+                    LOGGER.error("Reconnection failed.")
+                    
             LOGGER.error("Failed to get nodes: %s", err)
             return []
 
@@ -94,6 +105,17 @@ class ProxmoxClient:
         try:
             return self._proxmox.nodes(node).qemu.get()
         except Exception as err:
+            # Check for 401 Unauthorized (Ticket Expired)
+            if "401" in str(err) or "Unauthorized" in str(err):
+                LOGGER.warning("Auth token expired, reconnecting...")
+                if self.connect():
+                    try:
+                         return self._proxmox.nodes(node).qemu.get()
+                    except Exception as retry_err:
+                        LOGGER.error("Failed to get VMs after reconnect: %s", retry_err)
+                else:
+                    LOGGER.error("Reconnection failed.")
+            
             LOGGER.error("Failed to get VMs for node %s: %s", node, err)
             return []
 
@@ -104,6 +126,17 @@ class ProxmoxClient:
         try:
             return self._proxmox.nodes(node).lxc.get()
         except Exception as err:
+             # Check for 401 Unauthorized (Ticket Expired)
+            if "401" in str(err) or "Unauthorized" in str(err):
+                LOGGER.warning("Auth token expired, reconnecting...")
+                if self.connect():
+                    try:
+                         return self._proxmox.nodes(node).lxc.get()
+                    except Exception as retry_err:
+                        LOGGER.error("Failed to get LXCs after reconnect: %s", retry_err)
+                else:
+                    LOGGER.error("Reconnection failed.")
+            
             LOGGER.error("Failed to get LXCs for node %s: %s", node, err)
             return []
     
