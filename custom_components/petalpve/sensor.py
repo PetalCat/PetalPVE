@@ -103,6 +103,19 @@ async def async_setup_entry(
             lambda x: round(x.get("mem", 0) / 1073741824, 2) if x else 0
         ))
 
+        # Disk Used
+        entities.append(ProxmoxSensor(
+            coordinator, name, "lxc", str(vm_id), "disk_used", "Disk Used", 
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
+            lambda x: round(x.get("disk", 0) / 1073741824, 2) if x else 0
+        ))
+        # Disk Total
+        entities.append(ProxmoxSensor(
+            coordinator, name, "lxc", str(vm_id), "disk_total", "Disk Total", 
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
+            lambda x: round(x.get("maxdisk", 0) / 1073741824, 2) if x else 0
+        ))
+
     # Storage Sensors
     for store_id, store_data in coordinator.data["storage"].items():
         # Store ID is node_storage_name. Let's use a cleaner name if possible or just the combine
