@@ -26,7 +26,8 @@ class ProxmoxClient:
     ) -> None:
         """Initialize the Proxmox Client."""
         self._hass = hass
-        self._host = host
+        # Strip scheme if present, just in case config flow missed it or old config
+        self._host = host.replace("https://", "").replace("http://", "").rstrip("/")
         self._user = user
         self._password = password
         self._port = port
