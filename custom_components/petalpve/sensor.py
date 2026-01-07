@@ -45,8 +45,8 @@ async def async_setup_entry(
         # Total Memory
         entities.append(ProxmoxSensor(
             coordinator, node_name, "node", node_name, "memory_total", "Memory Total", 
-            UnitOfInformation.BYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
-            lambda x: x.get("maxmem", 0) if x else 0
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
+            lambda x: round(x.get("maxmem", 0) / 1073741824, 2) if x else 0
         ))
          # Uptime
         entities.append(ProxmoxSensor(
@@ -68,8 +68,8 @@ async def async_setup_entry(
         # Mem
         entities.append(ProxmoxSensor(
             coordinator, name, "qemu", str(vm_id), "memory", "Memory", 
-            UnitOfInformation.BYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
-            lambda x: x.get("mem", 0) if x else 0
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
+            lambda x: round(x.get("mem", 0) / 1073741824, 2) if x else 0
         ))
         
     # LXC Sensors
@@ -84,8 +84,8 @@ async def async_setup_entry(
         # Mem
         entities.append(ProxmoxSensor(
             coordinator, name, "lxc", str(vm_id), "memory", "Memory", 
-            UnitOfInformation.BYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
-            lambda x: x.get("mem", 0) if x else 0
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
+            lambda x: round(x.get("mem", 0) / 1073741824, 2) if x else 0
         ))
 
     # Storage Sensors
@@ -96,13 +96,13 @@ async def async_setup_entry(
         
         entities.append(ProxmoxSensor(
             coordinator, name, "storage", store_id, "used", "Used", 
-            UnitOfInformation.BYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
-            lambda x: x.get("used", 0) if x else 0
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.MEASUREMENT,
+            lambda x: round(x.get("used", 0) / 1073741824, 2) if x else 0
         ))
         entities.append(ProxmoxSensor(
             coordinator, name, "storage", store_id, "total", "Total", 
-            UnitOfInformation.BYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
-            lambda x: x.get("total", 0) if x else 0
+            UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
+            lambda x: round(x.get("total", 0) / 1073741824, 2) if x else 0
         ))
          # Usage %
         entities.append(ProxmoxSensor(
