@@ -13,7 +13,10 @@ from homeassistant.const import PERCENTAGE, UnitOfInformation, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
+from datetime import timedelta
 
 from .const import DOMAIN
 from .coordinator import ProxmoxCoordinator
@@ -48,11 +51,11 @@ async def async_setup_entry(
             UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
             lambda x: round(x.get("maxmem", 0) / 1073741824, 2) if x else 0
         ))
-         # Uptime
+         # Uptime (Last Boot)
         entities.append(ProxmoxSensor(
-            coordinator, node_name, "node", node_name, "uptime", "Uptime", 
-            UnitOfTime.SECONDS, SensorDeviceClass.DURATION, SensorStateClass.TOTAL,
-            lambda x: x.get("uptime", 0) if x else 0
+            coordinator, node_name, "node", node_name, "uptime", "Last Boot", 
+            None, SensorDeviceClass.TIMESTAMP, None,
+            lambda x: dt_util.now() - timedelta(seconds=x.get("uptime", 0)) if x and x.get("uptime", 0) > 0 else None
         ))
 
 
