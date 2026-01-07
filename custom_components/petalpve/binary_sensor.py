@@ -129,7 +129,6 @@ class ProxmoxBinarySensor(CoordinatorEntity[ProxmoxCoordinator], BinarySensorEnt
              data = self.coordinator.data["lxcs"].get(int(self._resource_id))
              
         if data:
-        if data:
             for k, v in data.items():
                 if k in ["tags", "cpus", "name", "uptime", "pid"]:
                     attrs[k] = v

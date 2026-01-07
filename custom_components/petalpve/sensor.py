@@ -87,6 +87,19 @@ async def async_setup_entry(
             UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
             lambda x: round(x.get("maxdisk", 0) / 1073741824, 2) if x else 0
         ))
+
+        # Console URL
+        def get_vm_console_url(x):
+            host = coordinator.client._host
+            port = coordinator.client._port
+            node = x.get("node")
+            return f"https://{host}:{port}/?console=kvm&novnc=1&vmid={vm_id}&node={node}&resize=off"
+            
+        entities.append(ProxmoxSensor(
+            coordinator, name, "qemu", str(vm_id), "console_url", "Console URL", 
+            None, None, None,
+            get_vm_console_url
+        ))
     # LXC Sensors
     for vm_id, vm_data in coordinator.data["lxcs"].items():
         name = vm_data["name"]
@@ -115,6 +128,21 @@ async def async_setup_entry(
             UnitOfInformation.GIGABYTES, SensorDeviceClass.DATA_SIZE, SensorStateClass.TOTAL,
             lambda x: round(x.get("maxdisk", 0) / 1073741824, 2) if x else 0
         ))
+        
+        # Console URL
+        def get_lxc_console_url(x):
+            host = coordinator.client._host
+            port = coordinator.client._port
+            node = x.get("node")
+            return f"https://{host}:{port}/?console=lxc&novnc=1&vmid={vm_id}&node={node}&resize=off"
+
+        entities.append(ProxmoxSensor(
+            coordinator, name, "lxc", str(vm_id), "console_url", "Console URL", 
+            None, None, None,
+            get_lxc_console_url
+        ))
+
+    # Storage Sensors
 
     # Storage Sensors
     for store_id, store_data in coordinator.data["storage"].items():
