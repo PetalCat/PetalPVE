@@ -37,10 +37,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         
         if user_input is not None:
+            host = user_input[CONF_HOST].replace("https://", "").replace("http://", "").rstrip("/")
+            
             # Validate connection
             client = ProxmoxClient(
                 self.hass,
-                user_input[CONF_HOST],
+                host,
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 user_input[CONF_PORT],
@@ -52,8 +54,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             success = await self.hass.async_add_executor_job(client.connect)
 
             if success:
+                # Update data with cleaned host
+                user_input[CONF_HOST] = host
                 return self.async_create_entry(
-                    title=f"{user_input[CONF_HOST]}",
+                    title=f"{host}",
                     data=user_input,
                 )
             else:
