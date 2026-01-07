@@ -1,4 +1,4 @@
-"""Global fixtures for pxhassos integration."""
+"""Global fixtures for petalpve integration."""
 from unittest.mock import patch
 import pytest
 
@@ -12,7 +12,7 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 @pytest.fixture
 def mock_proxmox_client():
     """Mock the ProxmoxClient."""
-    with patch("custom_components.pxhassos.config_flow.ProxmoxClient") as mock_client:
+    with patch("custom_components.petalpve.config_flow.ProxmoxClient") as mock_client:
         instance = mock_client.return_value
         instance.connect.return_value = True
         yield mock_client

@@ -1,8 +1,8 @@
-"""Constants for the Proxmox VE (pxhassos) integration."""
+"""Constants for the PetalPVE integration."""
 
 import logging
 
-DOMAIN = "pxhassos"
+DOMAIN = "petalpve"
 LOGGER = logging.getLogger(__package__)
 
 CONF_HOST = "host"

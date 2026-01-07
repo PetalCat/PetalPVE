@@ -1,0 +1,14 @@
+{
+  "domain": "petalpve",
+  "name": "PetalPVE",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/parker/petalpve",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/parker/petalpve/issues",
+  "requirements": [
+    "proxmoxer==2.0.1",
+    "requests>=2.28.0"
+  ],
+  "version": "1.0.0"
+}

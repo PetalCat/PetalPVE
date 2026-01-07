@@ -1,4 +1,4 @@
-"""Config flow for Proxmox VE (pxhassos) integration."""
+"""Config flow for PetalPVE integration."""
 from __future__ import annotations
 
 import logging

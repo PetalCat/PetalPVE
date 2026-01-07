@@ -4,7 +4,7 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.pxhassos.const import DOMAIN
+from custom_components.petalpve.const import DOMAIN
 
 async def test_form(hass: HomeAssistant, mock_proxmox_client) -> None:
     """Test we get the form."""
@@ -15,7 +15,7 @@ async def test_form(hass: HomeAssistant, mock_proxmox_client) -> None:
     assert result["errors"] == {}
 
     with patch(
-        "custom_components.pxhassos.config_flow.ProxmoxClient.connect",
+        "custom_components.petalpve.config_flow.ProxmoxClient.connect",
         return_value=True,
     ):
         result2 = await hass.config_entries.flow.async_configure(
@@ -47,7 +47,7 @@ async def test_form_cannot_connect(hass: HomeAssistant, mock_proxmox_client) -> 
     )
 
     with patch(
-        "custom_components.pxhassos.config_flow.ProxmoxClient.connect",
+        "custom_components.petalpve.config_flow.ProxmoxClient.connect",
         return_value=False,
     ):
         result2 = await hass.config_entries.flow.async_configure(
