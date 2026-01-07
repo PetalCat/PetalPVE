@@ -150,6 +150,33 @@ class ProxmoxClient:
             LOGGER.error("Failed to get storage for node %s: %s", node, err)
             return []
             
+    def get_vm_config(self, node: str, vm_id: int, vm_type: str = "qemu") -> dict[str, Any] | None:
+        """Get VM/LXC configuration."""
+        if not self._proxmox:
+            return None
+        try:
+            if vm_type == "lxc":
+                return self._proxmox.nodes(node).lxc(vm_id).config.get()
+            else:
+                return self._proxmox.nodes(node).qemu(vm_id).config.get()
+        except Exception as err:
+            LOGGER.error("Failed to get config for %s %s on %s: %s", vm_type, vm_id, node, err)
+            return None
+
+    def set_vm_config(self, node: str, vm_id: int, vm_type: str = "qemu", **kwargs) -> bool:
+        """Set VM/LXC configuration."""
+        if not self._proxmox:
+            return False
+        try:
+            if vm_type == "lxc":
+                self._proxmox.nodes(node).lxc(vm_id).config.post(**kwargs)
+            else:
+                self._proxmox.nodes(node).qemu(vm_id).config.post(**kwargs)
+            return True
+        except Exception as err:
+            LOGGER.error("Failed to set config for %s %s on %s: %s", vm_type, vm_id, node, err)
+            return False
+
     # Power Control Methods
 
     def start_vm(self, node: str, vm_id: int, vm_type: str = "qemu") -> bool:

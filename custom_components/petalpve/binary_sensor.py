@@ -129,9 +129,12 @@ class ProxmoxBinarySensor(CoordinatorEntity[ProxmoxCoordinator], BinarySensorEnt
              data = self.coordinator.data["lxcs"].get(int(self._resource_id))
              
         if data:
+        if data:
             for k, v in data.items():
-                if k not in ["status", "name"]:
+                if k in ["tags", "cpus", "name", "uptime", "pid"]:
                     attrs[k] = v
+                if k == "maxmem":
+                    attrs["memory_size"] = f"{round(v / 1073741824, 2)} GB"
         return attrs
 
     @property
